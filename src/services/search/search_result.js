@@ -43,7 +43,7 @@ class SearchResult {
         }
         
         linkScore = links.length
-        wordScore = log(wordScore / chunks.length)
+        wordScore = Math.log(wordScore / chunks.length)
 
         this.score = (3 * wordScore) + linkScore
     }
