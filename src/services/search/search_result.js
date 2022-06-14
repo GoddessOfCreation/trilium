@@ -17,10 +17,11 @@ class SearchResult {
     get noteId() {
         return this.notePathArray[this.notePathArray.length - 1];
     }
-    
 
-    computeScore(tokens) { // Token is query?
+    computeScore(tokens) {
         this.score = 0;
+        var linkScore = 0;
+        var wordScore = 0;
 
         const chunks = this.notePathTitle.toLowerCase().split(" ");
         const links = this.notePathLinks;
@@ -28,16 +29,23 @@ class SearchResult {
         for (const chunk of chunks) {
             for (const token of tokens) {
                 if (chunk === token) {
-                    this.score += 100;
+                    wordScore += 600 * token.length;
+                }
+                else if (chunk.startsWith(token)) {
+                    wordScore += 400 * (token.length / chunk.length);
                 }
                 else if (chunk.includes(token)) {
-                    this.score += 30;
+                    wordScore += 300 * (token.length / chunk.length);
                 }
-                
-                this.score += links.length * this.score;
-                this.score += this.score / chunks.length;
+
             }
+
         }
+        
+        linkScore = links.length
+        wordScore = log(wordScore / chunks.length)
+
+        this.score = (3 * wordScore) + linkScore
     }
 }
 
