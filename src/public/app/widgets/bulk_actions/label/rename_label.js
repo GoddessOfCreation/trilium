@@ -1,11 +1,11 @@
-import SpacedUpdate from "../../services/spaced_update.js";
-import AbstractSearchAction from "./abstract_search_action.js";
+import SpacedUpdate from "../../../services/spaced_update.js";
+import AbstractBulkAction from "../abstract_bulk_action.js";
 
 const TPL = `
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px;">Rename label from:</div> 
+            <div style="margin-right: 10px; flex-shrink: 0;">Rename label from:</div> 
             
             <input type="text" 
                 class="form-control old-label-name" 
@@ -27,8 +27,9 @@ const TPL = `
     </td>
 </tr>`;
 
-export default class RenameLabelSearchAction extends AbstractSearchAction {
+export default class RenameLabelBulkAction extends AbstractBulkAction {
     static get actionName() { return "renameLabel"; }
+    static get actionTitle() { return "Rename label"; }
 
     doRender() {
         const $action = $(TPL);
@@ -44,7 +45,7 @@ export default class RenameLabelSearchAction extends AbstractSearchAction {
                 oldLabelName: $oldLabelName.val(),
                 newLabelName: $newLabelName.val()
             });
-        }, 1000)
+        }, 1000);
 
         $oldLabelName.on('input', () => spacedUpdate.scheduleUpdate());
         $newLabelName.on('input', () => spacedUpdate.scheduleUpdate());

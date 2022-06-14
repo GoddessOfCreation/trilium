@@ -169,12 +169,6 @@ div.ui-tooltip {
     float: right;
 }
 
-#note-source {
-    height: 98%;
-    width: 100%;
-    overflow: scroll;
-}
-
 .suppressed {
     display: none;
 }
@@ -192,6 +186,7 @@ div.ui-tooltip {
 .dropdown-menu a:hover:not(.disabled), .dropdown-item:hover:not(.disabled) {
     color: var(--hover-item-text-color) !important;
     background-color: var(--hover-item-background-color) !important;
+    border-color: var(--hover-item-border-color) !important;
     cursor: pointer;
 }
 
@@ -210,17 +205,20 @@ div.ui-tooltip {
     padding-bottom: 0;
 }
 
-.dropdown-item {
+.dropdown-item, .dropdown-header {
     color: var(--menu-text-color) !important;
+    border: 1px solid transparent !important;
 }
 
 .dropdown-item.disabled, .dropdown-item.disabled kbd {
     color: #aaa !important;
 }
 
-.dropdown-item.active {
+.dropdown-item.active, .dropdown-item:focus {
     color: var(--active-item-text-color) !important;
     background-color: var(--active-item-background-color) !important;
+    border-color: var(--active-item-border-color) !important;
+    outline: none;
 }
 
 .CodeMirror {
@@ -475,8 +473,8 @@ table.promoted-attributes-in-tooltip td, table.promoted-attributes-in-tooltip th
 }
 
 .algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
-    color: var(--hover-item-text-color);
-    background-color: var(--hover-item-background-color);
+    color: var(--active-item-text-color);
+    background-color: var(--active-item-background-color);
 }
 
 .help-button {
@@ -870,6 +868,7 @@ body {
     box-shadow: 10px 10px 93px -25px black;
     padding: 10px 15px 10px 15px !important;
     width: 600px;
+    white-space: normal;
 }
 
 .help-dropdown .dropdown-menu pre {
@@ -945,7 +944,6 @@ input {
     border: 0;
     height: 100%;
     overflow: auto;
-    max-height: 300px;
 }
 
 #right-pane .card-body ul {

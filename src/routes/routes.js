@@ -31,6 +31,7 @@ const scriptRoute = require('./api/script');
 const senderRoute = require('./api/sender');
 const filesRoute = require('./api/files');
 const searchRoute = require('./api/search');
+const bulkActionRoute = require('./api/bulk_action');
 const specialNotesRoute = require('./api/special_notes');
 const noteMapRoute = require('./api/note_map');
 const clipperRoute = require('./api/clipper');
@@ -217,7 +218,7 @@ function register(app) {
     apiRoute(GET, '/api/autocomplete', autocompleteApiRoute.getAutocomplete);
 
     apiRoute(GET, '/api/notes/:noteId', notesApiRoute.getNote);
-    apiRoute(PUT, '/api/notes/:noteId', notesApiRoute.updateNote);
+    apiRoute(PUT, '/api/notes/:noteId/content', notesApiRoute.updateNoteContent);
     apiRoute(DELETE, '/api/notes/:noteId', notesApiRoute.deleteNote);
     apiRoute(PUT, '/api/notes/:noteId/undelete', notesApiRoute.undeleteNote);
     apiRoute(POST, '/api/notes/:parentNoteId/children', notesApiRoute.createNote);
@@ -233,7 +234,7 @@ function register(app) {
     apiRoute(GET, '/api/notes/:noteId/backlink-count', notesApiRoute.getBacklinkCount);
     apiRoute(POST, '/api/notes/relation-map', notesApiRoute.getRelationMap);
     apiRoute(POST, '/api/notes/erase-deleted-notes-now', notesApiRoute.eraseDeletedNotesNow);
-    apiRoute(PUT, '/api/notes/:noteId/change-title', notesApiRoute.changeTitle);
+    apiRoute(PUT, '/api/notes/:noteId/title', notesApiRoute.changeTitle);
     apiRoute(POST, '/api/notes/:noteId/duplicate/:parentNoteId', notesApiRoute.duplicateSubtree);
     apiRoute(POST, '/api/notes/:noteId/upload-modified-file', notesApiRoute.uploadModifiedFile);
 
@@ -355,6 +356,10 @@ function register(app) {
     apiRoute(POST, '/api/search-and-execute-note/:noteId', searchRoute.searchAndExecute);
     apiRoute(POST, '/api/search-related', searchRoute.getRelatedNotes);
     apiRoute(GET, '/api/search/:searchString', searchRoute.search);
+    apiRoute(GET, '/api/search-templates', searchRoute.searchTemplates);
+
+    apiRoute(POST, '/api/bulk-action/execute', bulkActionRoute.execute);
+    apiRoute(POST, '/api/bulk-action/affected-notes', bulkActionRoute.getAffectedNoteCount);
 
     route(POST, '/api/login/sync', [], loginApiRoute.loginSync, apiResultHandler);
     // this is for entering protected mode so user has to be already logged-in (that's the reason we don't require username)

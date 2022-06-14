@@ -55,7 +55,7 @@ function deriveMime(type, mime) {
         mime = 'text/plain';
     } else if (['relation-map', 'search', 'canvas'].includes(type)) {
         mime = 'application/json';
-    } else if (['render', 'book'].includes(type)) {
+    } else if (['render', 'book', 'iframe'].includes(type)) {
         mime = '';
     } else {
         mime = 'application/octet-stream';
@@ -154,6 +154,14 @@ function createNewNote(params) {
         }).save();
 
         scanForLinks(note);
+
+        if (params.templateNoteId) {
+            if (!becca.getNote(params.templateNoteId)) {
+                throw new Error(`Template note '${params.templateNoteId}' does not exist.`);
+            }
+
+            note.addRelation('template', params.templateNoteId);
+        }
 
         copyChildAttributes(parentNote, note);
 
@@ -512,7 +520,7 @@ function saveNoteRevisionIfNeeded(note) {
     }
 }
 
-function updateNote(noteId, noteUpdates) {
+function updateNoteContent(noteId, content) {
     const note = becca.getNote(noteId);
 
     if (!note.isContentAvailable()) {
@@ -521,33 +529,9 @@ function updateNote(noteId, noteUpdates) {
 
     saveNoteRevisionIfNeeded(note);
 
-    // if protected status changed, then we need to encrypt/decrypt the content anyway
-    if (['file', 'image'].includes(note.type) && note.isProtected !== noteUpdates.isProtected) {
-        noteUpdates.content = note.getContent();
-    }
+    content = saveLinks(note, content);
 
-    const noteTitleChanged = note.title !== noteUpdates.title;
-
-    note.title = noteUpdates.title;
-    note.isProtected = noteUpdates.isProtected;
-    note.save();
-
-    if (noteUpdates.content !== undefined && noteUpdates.content !== null) {
-        noteUpdates.content = saveLinks(note, noteUpdates.content);
-
-        note.setContent(noteUpdates.content);
-    }
-
-    if (noteTitleChanged) {
-        triggerNoteTitleChanged(note);
-    }
-
-    noteRevisionService.protectNoteRevisions(note);
-
-    return {
-        dateModified: note.dateModified,
-        utcDateModified: note.utcDateModified
-    };
+    note.setContent(content);
 }
 
 /**
@@ -900,7 +884,7 @@ sqlInit.dbReady.then(() => {
 module.exports = {
     createNewNote,
     createNewNoteWithTarget,
-    updateNote,
+    updateNoteContent,
     undeleteNote,
     protectNoteRecursively,
     scanForLinks,

@@ -1,11 +1,11 @@
-import SpacedUpdate from "../../services/spaced_update.js";
-import AbstractSearchAction from "./abstract_search_action.js";
+import SpacedUpdate from "../../../services/spaced_update.js";
+import AbstractBulkAction from "../abstract_bulk_action.js";
 
 const TPL = `
 <tr>
     <td colspan="2">
         <div style="display: flex; align-items: center">
-            <div style="margin-right: 10px;">Rename relation from:</div> 
+            <div style="margin-right: 10px; flex-shrink: 0;">Rename relation from:</div> 
             
             <input type="text" 
                 class="form-control old-relation-name" 
@@ -27,8 +27,9 @@ const TPL = `
     </td>
 </tr>`;
 
-export default class RenameRelationSearchAction extends AbstractSearchAction {
+export default class RenameRelationBulkAction extends AbstractBulkAction {
     static get actionName() { return "renameRelation"; }
+    static get actionTitle() { return "Rename relation"; }
 
     doRender() {
         const $action = $(TPL);

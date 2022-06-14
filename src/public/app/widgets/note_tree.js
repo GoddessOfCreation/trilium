@@ -307,14 +307,47 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
                 const targetType = data.targetType;
                 const node = data.node;
 
-                if (targetType === 'title' || targetType === 'icon') {
+                if (node.isSelected() && targetType === 'icon') {
+                    this.triggerCommand('openBulkActionsDialog', {
+                        selectedOrActiveNoteIds: this.getSelectedOrActiveNoteIds(node)
+                    });
+
+                    return false;
+                }
+                else if (targetType === 'title' || targetType === 'icon') {
                     if (event.shiftKey) {
-                        node.setSelected(!node.isSelected());
+                        const activeNode = this.getActiveNode();
+
+                        if (activeNode.getParent() !== node.getParent()) {
+                            return;
+                        }
+
+                        this.clearSelectedNodes();
+
+                        function selectInBetween(first, second) {
+                            for (let i = 0; first && first !== second && i < 10000; i++) {
+                                first.setSelected(true);
+                                first = first.getNextSibling();
+                            }
+
+                            second.setSelected();
+                        }
+
+                        if (activeNode.getIndex() < node.getIndex()) {
+                            selectInBetween(activeNode, node);
+                        } else {
+                            selectInBetween(node, activeNode);
+                        }
+
                         node.setFocus(true);
                     }
                     else if (event.ctrlKey) {
                         const notePath = treeService.getNotePath(node);
                         appContext.tabManager.openTabWithNoteWithHoisting(notePath);
+                    }
+                    else if (event.altKey) {
+                        node.setSelected(!node.isSelected());
+                        node.setFocus(true);
                     }
                     else if (data.node.isActive()) {
                         // this is important for single column mobile view, otherwise it's not possible to see again previously displayed note
@@ -513,6 +546,10 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
                         subNode.load();
                     }
                 });
+            },
+            select: (event, {node}) => {
+                $(node.span).find(".fancytree-custom-icon").attr("title",
+                    node.isSelected() ? "Apply bulk actions on selected notes" : "");
             }
         });
 
@@ -1257,6 +1294,15 @@ export default class NoteTreeWidget extends NoteContextAwareWidget {
         const nodes = this.getSelectedOrActiveNodes(node);
 
         return nodes.map(node => node.data.branchId);
+    }
+
+    /**
+     * @param {FancytreeNode} node
+     */
+    getSelectedOrActiveNoteIds(node) {
+        const nodes = this.getSelectedOrActiveNodes(node);
+
+        return nodes.map(node => node.data.noteId);
     }
 
     async deleteNotesCommand({node}) {
